@@ -22,11 +22,15 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa") // For JPA support
+	implementation("org.springframework.boot:spring-boot-starter-batch") // Spring Boot Batch dependency
+	implementation("com.h2database:h2") // H2 database dependency
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.batch:spring-batch-test") // Batch test dependency
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")

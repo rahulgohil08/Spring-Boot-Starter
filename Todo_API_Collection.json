@@ -193,6 +193,109 @@
         "description": "Delete all todos"
       },
       "response": []
+    },
+    {
+      "name": "CSV Upload - Single Processing",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/your/csvfile.csv",
+              "description": "CSV file to upload and process with single record processing"
+            }
+          ],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/csv/upload-single",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "csv", "upload-single"]
+        },
+        "description": "Upload and process CSV file with single record processing"
+      },
+      "response": []
+    },
+    {
+      "name": "CSV Upload - Batch Processing",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/your/csvfile.csv",
+              "description": "CSV file to upload and process with batch processing"
+            }
+          ],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/csv/upload-batch",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "csv", "upload-batch"]
+        },
+        "description": "Upload and process CSV file with batch processing for better performance with large files"
+      },
+      "response": []
+    },
+    {
+      "name": "Get CSV Record Count",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/csv/count",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "csv", "count"]
+        },
+        "description": "Get the total count of CSV records in the database"
+      },
+      "response": []
+    },
+    {
+      "name": "CSV Upload - Spring Batch Processing",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/your/csvfile.csv",
+              "description": "CSV file to upload and process using Spring Boot Batch"
+            }
+          ],
+          "options": {
+            "formdata": {}
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/csv/upload-spring-batch",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "csv", "upload-spring-batch"]
+        },
+        "description": "Upload and process CSV file using Spring Boot Batch framework for maximum performance with large files"
+      },
+      "response": []
     }
   ],
   "event": [
