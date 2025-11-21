@@ -1,6 +1,6 @@
 package com.world.spring
 
-import com.world.spring.common.ApiResponse
+import com.world.spring.shared.response.ApiResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -9,15 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
-import java.time.LocalDateTime
-
-data class ApiError(
-    val timestamp: LocalDateTime = LocalDateTime.now(),
-    val status: Int,
-    val error: String,
-    val message: String?,
-    val path: String
-)
 
 @RestControllerAdvice(basePackages = ["com.world.spring"])
 class GlobalExceptionHandler {
