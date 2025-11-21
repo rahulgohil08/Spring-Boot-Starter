@@ -1,9 +1,13 @@
 package com.world.spring.todo
 
+import com.world.spring.common.AdminOnly
 import com.world.spring.common.ApiResponse
+import com.world.spring.user.Role
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -82,6 +86,11 @@ class TodoController(private val todoService: TodoService) {
         return ResponseEntity.ok(ApiResponse.success(patchedTodo.toResponse(), "Todo updated successfully"))
     }
 
+    /**
+     * Only ADMIN can delete todos.
+     * USER role will be rejected with 403 (access denied) handled by GlobalExceptionHandler.
+     */
+    @AdminOnly
     @DeleteMapping("/{id}")
     fun deleteTodo(@PathVariable id: Long): ResponseEntity<ApiResponse<Unit>> {
         validateId(id)
@@ -93,6 +102,11 @@ class TodoController(private val todoService: TodoService) {
         return ResponseEntity.ok(ApiResponse.success("Todo deleted successfully"))
     }
 
+    /**
+     * Only ADMIN can delete todos.
+     * USER role will be rejected with 403 (access denied) handled by GlobalExceptionHandler.
+     */
+    @AdminOnly
     @DeleteMapping
     fun deleteAllTodos(): ResponseEntity<ApiResponse<Unit>> {
         todoService.deleteAllTodos()

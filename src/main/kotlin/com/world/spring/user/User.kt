@@ -21,5 +21,9 @@ data class User(
     var password: String,
 
     @Column(nullable = false)
-    val createdAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now(),
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    val role: Role = Role.USER  // default role USER
 )

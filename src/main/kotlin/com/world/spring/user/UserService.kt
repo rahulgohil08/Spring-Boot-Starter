@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 /**
- * A thin service responsible for user creation and lookup.
- * - register: encodes password and persists user
- * - findByUsername: returns user or null
+ * UserService:
+ * - register(username, rawPassword): creates a USER by default
+ * - registerAdmin(...) helper (used by DataInitializer) to create ADMIN
  */
 
 
@@ -18,13 +18,13 @@ class UserService(
     private val passwordEncoder: PasswordEncoder,
 ) {
     @Transactional
-    fun register(username: String, password: String): User {
+    fun register(username: String, password: String, role: Role = Role.USER): User {
 
         if (userRepository.existsByUsername(username)) {
             throw IllegalArgumentException("username already taken")
         }
         val encoded = passwordEncoder.encode(password)
-        val user = User(username = username, password = encoded)
+        val user = User(username = username, password = encoded, role = role)
         return userRepository.save(user)
     }
 
