@@ -1,10 +1,11 @@
-package com.world.spring.features.csv.service
+package com.world.spring.features.new_csv.service
 
-import com.world.spring.features.csv.batch.CsvBatchProcessor
-import com.world.spring.features.csv.entity.CsvRecord
-import com.world.spring.features.csv.repository.CsvRecordRepository
+import com.world.spring.features.new_csv.entity.CsvPerson
+import com.world.spring.features.new_csv.repository.CsvPersonRepository
 import org.slf4j.LoggerFactory
 import org.springframework.batch.core.Job
+import org.springframework.batch.core.JobExecution
+import org.springframework.batch.core.JobParameters
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.stereotype.Service
@@ -12,15 +13,16 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /**
  * Service class for handling CSV operations including parsing and database operations
  */
 @Service
 class CsvService(
-    val csvRecordRepository: CsvRecordRepository,  // Made public so controller can access it
+    val csvPersonRepository: CsvPersonRepository,  // Made public so controller can access it
     private val jobLauncher: JobLauncher,
-    private val csvBatchJob: Job
+    private val importCsvJob: Job,
 ) {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -42,7 +44,7 @@ class CsvService(
                 val fields = line.split(",")
 
                 if (fields.size >= 4) { // Ensure we have enough fields
-                    val csvRecord = CsvRecord(
+                    val csvPerson = CsvPerson(
                         name = fields[0].trim(),
                         email = fields[1].trim(),
                         age = fields[2].trim().toIntOrNull() ?: 0,
@@ -50,7 +52,7 @@ class CsvService(
                     )
 
                     // Save single record to database
-                    csvRecordRepository.save(csvRecord)
+                    csvPersonRepository.save(csvPerson)
                     recordCount++
                 }
             }
@@ -70,26 +72,26 @@ class CsvService(
         // Skip header line
         reader.readLine()
 
-        val batch = mutableListOf<CsvRecord>()
+        val batch = mutableListOf<CsvPerson>()
 
         reader.useLines { lines ->
             lines.forEach { line ->
                 val fields = line.split(",")
 
                 if (fields.size >= 4) { // Ensure we have enough fields
-                    val csvRecord = CsvRecord(
+                    val csvPerson = CsvPerson(
                         name = fields[0].trim(),
                         email = fields[1].trim(),
                         age = fields[2].trim().toIntOrNull() ?: 0,
                         city = fields[3].trim()
                     )
 
-                    batch.add(csvRecord)
+                    batch.add(csvPerson)
                     recordCount++
 
                     // Save batch when it reaches the specified size
                     if (batch.size >= batchSize) {
-                        csvRecordRepository.saveAll(batch)
+                        csvPersonRepository.saveAll(batch)
                         batch.clear() // Clear the batch after saving
                     }
                 }
@@ -97,7 +99,7 @@ class CsvService(
 
             // Save remaining records if any
             if (batch.isNotEmpty()) {
-                csvRecordRepository.saveAll(batch)
+                csvPersonRepository.saveAll(batch)
                 batch.clear()
             }
         }
@@ -106,33 +108,54 @@ class CsvService(
     }
 
     /**
-     * Process a CSV file using Spring Boot Batch for maximum performance with large files
+     * Process CSV file using Spring Batch
+     * This method uses Spring Boot Batch framework for processing large files efficiently
      */
-    fun processCsvFileWithBatch(multipartFile: MultipartFile): Int {
-        val tempFile = Files.createTempFile("csv_upload_", ".csv")
-        multipartFile.transferTo(tempFile.toFile())
-
-        try {
-            val jobParameters = JobParametersBuilder()
-                .addString("filePath", tempFile.toAbsolutePath().toString())
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters()
-
-            log.info("Starting Spring Batch job for file: {}", tempFile.fileName)
-            val jobExecution = jobLauncher.run(csvBatchJob, jobParameters)
-            log.info("Spring Batch job finished with status: {}", jobExecution.status)
-
-            return jobExecution.stepExecutions.sumOf { it.writeCount }.toInt()
-        } finally {
-            Files.deleteIfExists(tempFile)
-            log.info("Temporary file {} deleted", tempFile.fileName)
+    fun processCsvWithBatch(file: MultipartFile): Map<String, Any> {
+        if (file.isEmpty) {
+            throw IllegalArgumentException("File is empty")
         }
+
+        // Validate file type
+        if (!isValidCsvFile(file)) {
+            throw IllegalArgumentException("File must be a CSV")
+        }
+
+        // Write uploaded file to a temp location
+        val tempFile = Files.createTempFile("csv-upload-", ".csv").toFile()
+        file.inputStream.use { input -> Files.copy(input, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING) }
+
+        log.info("Received CSV file: {} (size: {} bytes) saved to {}", file.originalFilename, file.size, tempFile.absolutePath)
+
+        val jobParams = JobParametersBuilder()
+            .addString("filePath", tempFile.absolutePath)
+            .addLong("timestamp", System.currentTimeMillis())
+            .toJobParameters()
+
+        val execution: JobExecution = jobLauncher.run(importCsvJob, jobParams)
+        val count = execution.stepExecutions.sumOf { it.writeCount }.toInt()
+
+        return mapOf(
+            "status" to true,
+            "message" to "Job launched with total $count records",
+            "jobExecutionId" to execution.id,
+            "exitStatus" to execution.exitStatus.exitCode
+        )
     }
 
     /**
      * count of the records in the DB
      */
     fun fetchCountOfRecordsInTheDB(): Int {
-         return csvRecordRepository.count().toInt()
+         return csvPersonRepository.count().toInt()
+    }
+
+    /**
+     * Helper function to validate if the uploaded file is a CSV
+     */
+    private fun isValidCsvFile(file: MultipartFile): Boolean {
+        return file.contentType == "text/csv" ||
+                file.contentType == "application/vnd.ms-excel" ||
+                file.originalFilename?.endsWith(".csv") == true
     }
 }

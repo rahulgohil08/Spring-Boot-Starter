@@ -75,6 +75,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "url": {
@@ -94,6 +99,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "url": {
@@ -120,6 +130,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "body": {
@@ -148,6 +163,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "body": {
@@ -183,6 +203,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "body": {
@@ -218,6 +243,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "url": {
@@ -244,6 +274,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "url": {
@@ -259,7 +294,13 @@
       "name": "CSV Upload - Single Processing",
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "formdata",
           "formdata": [
@@ -287,7 +328,13 @@
       "name": "CSV Upload - Batch Processing",
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "formdata",
           "formdata": [
@@ -319,6 +366,11 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
         ],
         "url": {
@@ -334,7 +386,13 @@
       "name": "CSV Upload - Spring Batch Processing",
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "formdata",
           "formdata": [
@@ -350,9 +408,9 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/api/csv/upload-spring-batch",
+          "raw": "{{baseUrl}}/api/csv/upload-and-run",
           "host": ["{{baseUrl}}"],
-          "path": ["api", "csv", "upload-spring-batch"]
+          "path": ["api", "csv", "upload-and-run"]
         },
         "description": "Upload and process CSV file using Spring Boot Batch framework for maximum performance with large files"
       },

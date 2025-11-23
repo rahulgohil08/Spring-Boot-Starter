@@ -7,6 +7,7 @@ This is a Spring Boot CRUD application with in-memory storage for todos. All res
 
 ## Authentication
 This API uses JWT for authentication. To access protected endpoints, you need to include a JWT token in the `Authorization` header of your request.
+**Note**: All endpoints except `/api/auth/register` and `/api/auth/login` require authentication.
 
 `Authorization: Bearer <your_jwt_token>`
 
@@ -60,16 +61,19 @@ All API responses follow this wrapper format:
 ### 3. Get All Todos
 - **GET** `/api/todos`
 - **Description**: Retrieve all todos
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
 - **Response**: `200 OK` with `ApiResponse<List<TodoResponse>>`
 
 ### 4. Get Todo by ID
 - **GET** `/api/todos/{id}`
 - **Description**: Retrieve a specific todo by ID
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
 - **Response**: `200 OK` with `ApiResponse<TodoResponse>`, or `404 Not Found` if todo doesn't exist
 
 ### 5. Create Todo
 - **POST** `/api/todos`
 - **Content-Type**: `application/json`
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
 - **Request Body**:
   ```json
   {
@@ -84,6 +88,7 @@ All API responses follow this wrapper format:
 ### 6. Update Todo
 - **PUT** `/api/todos/{id}`
 - **Content-Type**: `application/json`
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
 - **Request Body**:
   ```json
   {
@@ -98,6 +103,7 @@ All API responses follow this wrapper format:
 ### 7. Partial Update Todo
 - **PATCH** `/api/todos/{id}`
 - **Content-Type**: `application/json`
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
 - **Request Body** (only specify fields to update):
   ```json
   {
@@ -112,12 +118,46 @@ All API responses follow this wrapper format:
 ### 8. Delete Todo
 - **DELETE** `/api/todos/{id}`
 - **Description**: Delete a specific todo by ID
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
 - **Response**: `200 OK` with `ApiResponse<Unit>`, or `404 Not Found` if todo doesn't exist
 
 ### 9. Delete All Todos
 - **DELETE** `/api/todos`
 - **Description**: Delete all todos
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
 - **Response**: `200 OK` with `ApiResponse<Unit>`
+
+## CSV Endpoints
+
+### 10. Upload CSV with Single Processing
+- **POST** `/api/csv/upload-single`
+- **Description**: Upload and process CSV file with single record processing (for smaller files)
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
+- **Content-Type**: `multipart/form-data`
+- **Request Body**: File parameter named "file"
+- **Response**: `200 OK` with success message
+
+### 11. Upload CSV with Batch Processing
+- **POST** `/api/csv/upload-batch`
+- **Description**: Upload and process CSV file with batch processing (for large files)
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
+- **Content-Type**: `multipart/form-data`
+- **Request Body**: File parameter named "file"
+- **Response**: `200 OK` with success message
+
+### 12. Upload CSV with Spring Batch
+- **POST** `/api/csv/upload-and-run`
+- **Description**: Upload and process CSV file using Spring Boot Batch framework
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
+- **Content-Type**: `multipart/form-data`
+- **Request Body**: File parameter named "file"
+- **Response**: `202 Accepted` with job execution details
+
+### 13. Get CSV Record Count
+- **GET** `/api/csv/count`
+- **Description**: Get the total count of CSV records in the database
+- **Headers**: `Authorization: Bearer <your_jwt_token>`
+- **Response**: `200 OK` with record count
 
 ## Validation Rules
 - **Title**: Required, cannot be blank, max 255 characters
